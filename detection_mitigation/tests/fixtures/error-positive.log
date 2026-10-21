@@ -1,0 +1,2 @@
+[21-Oct-2026 10:00:00] WARNING: [pool www] child 123 exited on signal 11 (SIGSEGV) after 12.3 seconds from start
+[21-Oct-2026 10:00:10] PHP Fatal error: Allowed memory size of 134217728 bytes exhausted (tried to allocate 4096 bytes)
