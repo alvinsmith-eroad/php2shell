@@ -2,6 +2,19 @@
 
 This directory contains an offline, heuristic triage PoC and the existing cPanel partial mitigation material for CVE-2026-109618 and CVE-2026-109619.
 
+## Public HTTPS information check
+
+[`php2shell-http-check.py`](php2shell-http-check.py) makes one ordinary HTTPS `GET` to the exact URL you supply and reports public response status plus `Server` and `X-Powered-By` headers. It is for information disclosure only: it does not send an exploit, submit a login form, inspect the response body, or follow redirects. It accepts public hosts on the default HTTPS port only.
+
+```sh
+python3 detection_mitigation/php2shell-http-check.py \
+  'https://your-authorized-host.example/wp-login.php'
+```
+
+Use `--format json` for JSON output. If the site advertises `X-Powered-By: PHP/8.2.1`, the tool reports `php_version_disclosed` and the advertised version. If it does not, the status is `no_php_version_disclosed`. Either way `vulnerability_status` is always `not_determined`: a public URL cannot confirm which PHP binary/SAPI/pool serves the WordPress endpoint, vendor backports, or whether it can be exploited. A hidden version does not mean safe, and an advertised version by itself does not prove vulnerable or pwnable. The tool does not compare against release numbers because upstream/vendor fix details referenced by this repository were not independently verified here.
+
+The checker does not access this repository's prior example host unless its operator explicitly supplies that URL. Do not use it against systems without authorization. The program has no exploit mode and performs one request per invocation; DNS is resolved and pinned to a publicly routable address, TLS certificates are verified, redirects are not followed, and the response body is not read. It uses Python's standard library. We do not run it against production during development.
+
 ## Detection PoC
 
 [`php2shell-triage.py`](php2shell-triage.py) analyzes only local files explicitly supplied on the command line. It makes no network requests, changes no configuration, restarts no services, and never executes discovered code. It uses only the Python 3 standard library.
